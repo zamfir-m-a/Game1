@@ -1,0 +1,78 @@
+package game;
+
+import java.awt.Image;
+
+import javax.swing.ImageIcon;
+
+public class Player {
+	
+	
+	private int x,y; // coord pt pozitie *32
+	
+	private int shots;
+	private static int maxShots=5;
+	
+	private Image playerImg;
+	
+	
+	public Player(String imagePath,int x32 , int y32){
+		// aplica corectii de pt blocuri de rezolutie 32x32 biti
+		x=x32*32;
+		y=y32*32;
+		
+		
+		shots=maxShots;
+		
+		
+		ImageIcon img = new ImageIcon(imagePath);
+		playerImg=img.getImage();
+		}
+	
+	public Image getPlayer()
+	{
+		return playerImg;
+	}
+	
+	public int getX()
+	{
+		return x;
+	}
+	
+	public int getY()
+	{
+		return y;
+	}
+	
+	public int getShots()
+	{
+		return shots;
+		
+	}
+	
+	public void decreaseAmmo()
+	{
+		shots--;
+	}
+
+	
+	
+	
+	public void move(int vx , int vy )
+	{
+		//aici tratez iesirea de pe map
+		if( vx+x/32<0 || vx+x/32>31 || vy+y/32<0 || vy+y/32>23 )
+		{
+		 // do nothing
+		}
+		else
+		{
+			x=x+32*vx;
+			y=y+32*vy;
+		}
+	}	
+	
+	
+	
+
+
+}
