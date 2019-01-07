@@ -1,0 +1,68 @@
+package game;
+import java.awt.Graphics;
+import java.util.*;
+
+
+// clasa de control pentru clasa de proiectile bullet
+
+public class BulletController {
+	private LinkedList<Bullet> list = new LinkedList<Bullet>();
+	
+	Bullet TempBullet;
+	public void tick() // face tick pe toate proiectilele
+	{
+		for(int i=0;i<list.size();i++)
+		{
+			
+			TempBullet=list.get(i);
+			TempBullet.tick();
+		}
+	}
+	
+	public boolean detectPlayer(int xPlayer , int yPlayer)
+	{
+		for(int i=0;i<list.size();i++)
+		{
+			
+			TempBullet=list.get(i);
+			
+			if(TempBullet.GetX()==xPlayer &&  TempBullet.GetY()==yPlayer)
+				return true;
+			
+			
+		}
+		return false;
+		
+		
+	}
+	
+	public void renderAllBullets (Graphics g,Map m)
+	{
+		
+		for(int i=0;i<list.size();i++)
+		{
+			
+			
+			
+			TempBullet=list.get(i);
+			if(TempBullet.GetKillBullet()==0)
+			TempBullet.drawBullet(g,m);
+			else
+				list.remove(TempBullet);
+			
+			
+		}
+	}
+	public void addBullet(Bullet b)
+	{
+		list.add(b);
+	}
+	
+	public void removeBullet(Bullet b)
+	{
+		list.remove(b);
+	}
+	
+	
+	
+}
