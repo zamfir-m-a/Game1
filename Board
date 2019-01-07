@@ -1,0 +1,47 @@
+package game;
+import java.awt.Color;
+import java.awt.Font;
+
+import javax.swing.*;
+
+//clasa care ruleaza 
+
+
+
+public class Maze {
+	public static void main (String[] args)
+	{
+		new Maze();
+	
+	}
+
+	
+	public Maze() {
+		// LABEL instructiuni
+		// nu are rost sa fac layout pentru un singur label
+		
+		
+		
+		JLabel label=new JLabel("<html> <br> <br> <br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br>INSTRUCTIONS<br>REACH THE CENTER FIRST OR KILL THE OPONENT<br> CONTROLS: <br> MOVEMENT: WASD/ ARROWS    <br>  SHOOT: H / NUM3  <br> 5 SHOTS EACH  </html>",SwingConstants.CENTER);
+
+		
+		
+		
+		//FRAME
+		JFrame f = new JFrame(); 
+		f.setTitle("Maze 0.000001"); // titlu  bara executabil	
+		
+		f.setBackground(new Color(7,10,28)); // background
+		
+		
+		
+		f.add(new Board()); // adauga obiect Board
+		f.setSize(1078,1024);
+		f.setLocationRelativeTo(null);
+		f.setVisible(true);
+		f.setResizable(false);
+		f.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+		
+		f.add(label,-1);
+	}
+}
