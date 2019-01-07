@@ -1,47 +1,255 @@
 package game;
-import java.awt.Color;
-import java.awt.Font;
+
+import java.awt.*;
+import java.awt.event.*;
+import java.io.IOException;
+import java.util.concurrent.TimeUnit;
 
 import javax.swing.*;
 
-//clasa care ruleaza 
+public class Board extends JPanel implements ActionListener {
 
+	private Timer timer;
 
+	private static boolean gameOver = false;
 
-public class Maze {
-	public static void main (String[] args)
+	private Map m;
+	private static int xMAX=32;
+	private static int yMAX=24;
+	private Player p1, p2;
+	private String message;
+	BulletController b=new BulletController();
+	public static void endGame() {
+		gameOver = true;
+	}
+
+	public Board() {
+		m = new Map(); // load the map via the MAP class;
+		p1 = new Player("C:\\test\\Player1.png", 1, 22);
+		p2 = new Player("C:\\test\\Player2.png", 30, 22);
+
+		addKeyListener(new Al());
+		setFocusable(true);
+		
+		timer = new Timer(60, this);
+		timer.start();
+
+		
+		
+		
+	}
+	
+	/*
+	aici puteam adauga un mesaj pe Jframe pentru ammo , cu functiile astea 
+	dar e MUUULT mai distractiv fara :D,  si le las aici daca ma razgandesc 
+	
+	
+	
+	public String returnP1AmmoMessage()
 	{
-		new Maze();
+		return "Player1 has "+p1.getShots()+" ammo";
+	}
 	
+	public String returnP2AmmoMessage()
+	{
+		return "Player2 has "+p.getShots()+" ammo";
+	}
+    */
+	
+	
+	public void actionPerformed(ActionEvent e) {
+		if (!gameOver) {
+			
+			
+			b.tick();
+			repaint();
+		}
+		
+		if(b.detectPlayer(p1.getX(), p1.getY()))
+		{
+			 message="PLAYER 2 WON";
+			 Board.endGame();
+		}
+		
+		
+		if(b.detectPlayer(p2.getX(), p2.getY()))
+		{
+			 message="PLAYER 1 WON";
+			 Board.endGame();
+		}
+		
+		if(m.getMap(p1.getX()/32, p1.getY()/32).equals("e") )
+		{
+		 message="PLAYER 1 WON";
+		 Board.endGame();
+		}
+		
+		if(m.getMap(p2.getX()/32, p2.getY()/32).equals("e") )
+		{
+		 message="PLAYER 2 WON";
+		 Board.endGame();
+		}
+		
 	}
 
-	
-	public Maze() {
-		// LABEL instructiuni
-		// nu are rost sa fac layout pentru un singur label
-		
-		
-		
-		JLabel label=new JLabel("<html> <br> <br> <br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br>INSTRUCTIONS<br>REACH THE CENTER FIRST OR KILL THE OPONENT<br> CONTROLS: <br> MOVEMENT: WASD/ ARROWS    <br>  SHOOT: H / NUM3  <br> 5 SHOTS EACH  </html>",SwingConstants.CENTER);
+	public void paint(Graphics g) {
+		// super.paint(g); //for testing
 
-		
-		
-		
-		//FRAME
-		JFrame f = new JFrame(); 
-		f.setTitle("Maze 0.000001"); // titlu  bara executabil	
-		
-		f.setBackground(new Color(7,10,28)); // background
-		
-		
-		
-		f.add(new Board()); // adauga obiect Board
-		f.setSize(1078,1024);
-		f.setLocationRelativeTo(null);
-		f.setVisible(true);
-		f.setResizable(false);
-		f.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-		
-		f.add(label,-1);
+		g.drawImage(m.getWall(), 300, 300, null);
+
+		for (int y = 0; y < yMAX; y++) // afisare adancime
+		{
+			for (int x = 0; x < xMAX; x++) // afisare lungime
+			{
+
+				if (m.getMap(x, y).equals("f")) {
+					g.drawImage(m.getFloor(), x * 32, y * 32, null);
+				}
+
+				if (m.getMap(x, y).equals("w")) {
+					g.drawImage(m.getWall(), x * 32, y * 32, null);
+				}
+
+				if (m.getMap(x, y).equals("e")) {
+					g.drawImage(m.getFloor(), x * 32, y * 32, null);
+					g.drawImage(m.getEventSprite(), x * 32, y * 32, null);
+				}
+
+				// draw player 1
+				g.drawImage(p1.getPlayer(), p1.getX(), p1.getY(), null);
+				// draw player 2
+				g.drawImage(p2.getPlayer(), p2.getX(), p2.getY(), null);
+				
+				//draw bullets
+				b.renderAllBullets(g,m);
+				
+				// draw message
+				if(message!=null) // if endgame condition
+				{	
+					g.drawString (message , 500, 800);
+					
+				}
+				
+			}
+		}
+
 	}
+
+	public class Al extends KeyAdapter {
+		public void keyPressed(KeyEvent e) {
+			// bloc actiune cand tasta e APASATA
+
+			int key = e.getKeyCode();
+
+			// PLAYER 1
+
+			if (key == KeyEvent.VK_W) {
+				
+				if( m.getMap (p1.getX()/32   ,    p1.getY()/32-1   ).equals("f") || m.getMap (p1.getX()/32   ,    p1.getY()/32-1   ).equals("e"))
+						{
+							p1.move(0, -1);
+						}
+
+				
+			}
+
+			if (key == KeyEvent.VK_S) {
+				
+				if( m.getMap (p1.getX()/32   ,    p1.getY()/32+1   ).equals("f") || m.getMap (p1.getX()/32   ,    p1.getY()/32+1   ).equals("e"))
+				{
+					p1.move(0, 1);
+				}
+
+
+				
+			}
+
+			if (key == KeyEvent.VK_A) {
+
+				if( m.getMap (p1.getX()/32 -1  ,    p1.getY()/32  ).equals("f") ||  m.getMap (p1.getX()/32 -1  ,    p1.getY()/32  ).equals("e"))
+				{
+					p1.move(-1, 0);
+				}
+
+			}
+
+			if (key == KeyEvent.VK_D) {
+
+				if( m.getMap (p1.getX()/32 +1  ,    p1.getY()/32  ).equals("f") || m.getMap (p1.getX()/32 +1  ,    p1.getY()/32  ).equals("e")  )
+				{
+					p1.move(1, 0);
+				}
+			}
+			
+			
+			if (key == KeyEvent.VK_H   && p1.getShots()!=0) {
+				
+				p1.decreaseAmmo();
+				b.addBullet( new Bullet ( p1.getX() , p1.getY() , 1  ) );
+				
+				b.addBullet( new Bullet ( p1.getX() , p1.getY() , 2  ) ); 
+				b.addBullet( new Bullet ( p1.getX() , p1.getY() , 3  ) );
+				b.addBullet( new Bullet ( p1.getX() , p1.getY() , 4  ) ); 
+				
+				
+			}
+			
+
+			// Player 2
+
+			if (key == KeyEvent.VK_UP) {
+				
+				if( m.getMap (p2.getX()/32   ,    p2.getY()/32-1   ).equals("f") || m.getMap (p2.getX()/32   ,    p2.getY()/32-1   ).equals("e"))
+						{
+							p2.move(0, -1);
+						}
+
+				
+			}
+
+			if (key == KeyEvent.VK_DOWN) {
+				
+				if( m.getMap (p2.getX()/32   ,    p2.getY()/32+1   ).equals("f") || m.getMap (p2.getX()/32   ,    p2.getY()/32+1   ).equals("e"))
+				{
+					p2.move(0, 1);
+				}
+
+
+				
+			}
+
+			if (key == KeyEvent.VK_LEFT) {
+
+				if( m.getMap (p2.getX()/32 -1  ,    p2.getY()/32  ).equals("f") ||  m.getMap (p2.getX()/32 -1  ,    p2.getY()/32  ).equals("e") )
+				{
+					p2.move(-1, 0);
+				}
+
+			}
+
+			if (key == KeyEvent.VK_RIGHT) {
+
+				if( m.getMap (p2.getX()/32 +1  ,    p2.getY()/32  ).equals("f") || m.getMap (p2.getX()/32 +1  ,    p2.getY()/32  ).equals("e")  )
+				{
+					p2.move(1, 0);
+				}
+			}
+
+			if (key == KeyEvent.VK_NUMPAD3 && p2.getShots()!=0  )  {
+				
+				p2.decreaseAmmo();
+				b.addBullet( new Bullet ( p2.getX() , p2.getY() , 1  ) );
+				
+				b.addBullet( new Bullet ( p2.getX() , p2.getY() , 2  ) ); 
+				b.addBullet( new Bullet ( p2.getX() , p2.getY() , 3  ) );
+				b.addBullet( new Bullet ( p2.getX() , p2.getY() , 4  ) ); 
+
+			}
+			
+			
+
+		}
+
+	}
+
 }
